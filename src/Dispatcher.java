@@ -15,35 +15,9 @@ public class Dispatcher {
         try {
             Socket socket = serverSocket.accept();
 
-            demultiplex(socket, handleMap);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void demultiplex(Socket socket, HandleMap handleMap) {
-        try {
-            InputStream inputStream = socket.getInputStream();
-
-            byte[] buffer = new byte[HEADER_SIZE];
-            inputStream.read(buffer);
-            String header = new String(buffer);
-
-            handleMap.get(header).handleEvent(inputStream);
-
-            socket.close();
-
-//            switch (header) {
-//                case "0x5001":
-//                    StreamSayHelloProtocol streamSayHelloProtocol = new StreamSayHelloProtocol();
-//                    streamSayHelloProtocol.handleEvent(inputStream);
-//                    break;
-//                case "0x6001":
-//                    StreamUpdateProfileProtocol streamUpdateProfileProtocol = new StreamUpdateProfileProtocol();
-//                    streamUpdateProfileProtocol.handleEvent(inputStream);
-//                    break;
-//            }
-
+            Runnable demultiplexer = new Demultiplexer(socket, handleMap);
+            Thread thread = new Thread(demultiplexer);
+            thread.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
