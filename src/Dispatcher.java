@@ -9,8 +9,6 @@ import java.net.Socket;
 
 public class Dispatcher {
 
-    private final int HEADER_SIZE = 6;
-
     public void dispatch(ServerSocket serverSocket, HandleMap handleMap) {
         try {
             Socket socket = serverSocket.accept();
